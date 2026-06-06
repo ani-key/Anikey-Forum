@@ -23,7 +23,7 @@
 | 样式 | Tailwind CSS |
 | 路由 | React Router（HashRouter，避免 Pages 刷新 404） |
 | 数据请求 | TanStack Query |
-| 番剧数据 | Bangumi API（浏览器直连，CORS 开放） |
+| 番剧数据 | Bangumi API（支持可选代理） |
 | 后端 | Supabase（Postgres + Auth + 行级权限 RLS） |
 | 部署 | GitHub Actions → GitHub Pages |
 
@@ -60,6 +60,38 @@ npm run dev
 
 ---
 
+## 🌏 配置 Bangumi 国内访问代理（可选）
+
+如果当前网络无法直连 `bgm.tv` / `api.bgm.tv`，首页、搜索、详情和封面会加载失败。此时需要部署一个代理服务，再把代理地址写入环境变量。
+
+项目内提供了 Cloudflare Worker 模板：
+
+```
+deploy/cloudflare/bangumi-proxy-worker.js
+```
+
+部署 Worker 后，假设地址是：
+
+```
+https://your-bangumi-proxy.example.workers.dev
+```
+
+本地 `.env` 增加：
+
+```
+VITE_BANGUMI_API_BASE=https://your-bangumi-proxy.example.workers.dev
+VITE_BANGUMI_IMAGE_PROXY=https://your-bangumi-proxy.example.workers.dev/image
+```
+
+线上 GitHub Pages 需要在仓库 **Settings → Secrets and variables → Actions** 添加：
+
+- `VITE_BANGUMI_API_BASE`
+- `VITE_BANGUMI_IMAGE_PROXY`
+
+然后重新运行 Pages 部署 workflow。
+
+---
+
 ## 🌐 部署到 GitHub Pages
 
 1. 把代码推到 GitHub 仓库（仓库名建议保持 `Anikey-Forum`；若改名，请同步修改 `vite.config.ts` 里的 `base`）。
@@ -74,6 +106,8 @@ npm run dev
 2. 仓库 **Settings → Secrets and variables → Actions → New repository secret**，添加两个：
    - `VITE_SUPABASE_URL`
    - `VITE_SUPABASE_ANON_KEY`
+   - 可选：`VITE_BANGUMI_API_BASE`
+   - 可选：`VITE_BANGUMI_IMAGE_PROXY`
 3. 仓库 **Settings → Pages → Build and deployment → Source** 选择 **GitHub Actions**。
 4. 每次 push 到 `main`，[`.github/workflows/deploy.yml`](./.github/workflows/deploy.yml) 会自动构建并部署。
 5. 部署完成后访问：`https://<你的用户名>.github.io/Anikey-Forum/`

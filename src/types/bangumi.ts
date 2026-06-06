@@ -56,11 +56,23 @@ export function displayName(s: Pick<BangumiSubject, 'name' | 'name_cn'>): string
   return s.name_cn?.trim() || s.name
 }
 
+function withImageProxy(url: string): string {
+  const proxy = import.meta.env.VITE_BANGUMI_IMAGE_PROXY?.trim()
+  if (!proxy) return url
+
+  const encoded = encodeURIComponent(url)
+  if (proxy.includes('{url}')) return proxy.replace('{url}', encoded)
+
+  const separator = proxy.includes('?') ? '&' : '?'
+  return `${proxy}${separator}url=${encoded}`
+}
+
 /** 取封面 url，按清晰度回退；无图返回 null */
 export function coverUrl(
   s: Pick<BangumiSubject, 'images'>,
   size: keyof BangumiImages = 'common',
 ): string | null {
   if (!s.images) return null
-  return s.images[size] || s.images.common || s.images.large || null
+  const url = s.images[size] || s.images.common || s.images.large || null
+  return url ? withImageProxy(url) : null
 }

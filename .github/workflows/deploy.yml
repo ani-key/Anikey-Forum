@@ -34,6 +34,9 @@ jobs:
           # 在仓库 Settings → Secrets and variables → Actions 里配置这两个 secret
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          # 可选：国内访问 Bangumi 时使用的代理
+          VITE_BANGUMI_API_BASE: ${{ secrets.VITE_BANGUMI_API_BASE }}
+          VITE_BANGUMI_IMAGE_PROXY: ${{ secrets.VITE_BANGUMI_IMAGE_PROXY }}
         run: npm run build
 
       - uses: actions/upload-pages-artifact@v3

@@ -1,13 +1,13 @@
-// Bangumi API 客户端
-// 已实测：api.bgm.tv 对这些只读端点返回 Access-Control-Allow-Origin: *，
-// 浏览器可直接调用，无需自建代理。
+// Bangumi API 客户端。默认直连 api.bgm.tv；如果访问环境无法直连，
+// 可通过 VITE_BANGUMI_API_BASE 指向一个兼容路径的代理服务。
 import type {
   BangumiSubject,
   BangumiSearchResponse,
   BangumiCalendarDay,
 } from '../types/bangumi'
 
-const BASE = 'https://api.bgm.tv'
+const configuredBase = import.meta.env.VITE_BANGUMI_API_BASE?.trim()
+const BASE = (configuredBase || 'https://api.bgm.tv').replace(/\/+$/, '')
 
 // 动画条目的 type 编号（1=书籍 2=动画 3=音乐 4=游戏 6=三次元）
 export const SUBJECT_TYPE_ANIME = 2
