@@ -57,10 +57,14 @@ export function displayName(s: Pick<BangumiSubject, 'name' | 'name_cn'>): string
 }
 
 function withImageProxy(url: string): string {
-  const proxy = import.meta.env.VITE_BANGUMI_IMAGE_PROXY?.trim()
-  if (!proxy) return url
+  // Bangumi 返回的封面常是 http://，但本站是 https（会被浏览器按“混合内容”拦截），
+  // 且图片代理只接受 https，所以统一升级成 https。lain.bgm.tv 本身支持 https。
+  const httpsUrl = url.replace(/^http:\/\//i, 'https://')
 
-  const encoded = encodeURIComponent(url)
+  const proxy = import.meta.env.VITE_BANGUMI_IMAGE_PROXY?.trim()
+  if (!proxy) return httpsUrl
+
+  const encoded = encodeURIComponent(httpsUrl)
   if (proxy.includes('{url}')) return proxy.replace('{url}', encoded)
 
   const separator = proxy.includes('?') ? '&' : '?'
