@@ -6,7 +6,7 @@ import {
   type ReactNode,
 } from 'react'
 import type { Session, User } from '@supabase/supabase-js'
-import { supabase, isSupabaseConfigured } from '../lib/supabase'
+import { supabase, isSupabaseConfigured, getSiteUrl } from '../lib/supabase'
 
 interface AuthContextValue {
   session: Session | null
@@ -49,8 +49,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      // username 存入 user_metadata，数据库触发器会据此创建 profile
-      options: { data: { username } },
+      options: {
+        // username 存入 user_metadata，数据库触发器会据此创建 profile
+        data: { username },
+        // 确认邮件里的链接跳回本站，而不是 Supabase 默认的 localhost
+        emailRedirectTo: getSiteUrl(),
+      },
     })
     if (error) return { error: error.message, needConfirm: false }
     // 若项目开启了「邮箱确认」，此时还没有 session

@@ -55,8 +55,16 @@ npm run dev
    ```
    > 这两个值是公开的，安全由数据库 RLS 保证。
 4. 打开 Supabase 控制台的 **SQL Editor**，把 [`supabase/schema.sql`](./supabase/schema.sql) 整段粘贴进去运行（建表 + 权限 + 触发器 + 开启实时更新）。
-5.（可选）**Authentication → Providers → Email**：开发期可关闭「Confirm email」，注册后就能直接登录；保持开启则需要去邮箱点确认链接。
-6. 重启 `npm run dev`，即可注册、打分、评论。
+5. **配置注册确认链接地址（重要）**。进入 **Authentication → URL Configuration**：
+   - **Site URL**：填你线上的访问地址，例如 `https://<你的用户名>.github.io/Anikey-Forum/`。
+   - **Redirect URLs**：把下面这些都加进白名单（前端代码会用 `emailRedirectTo` 指定跳回地址，但该地址必须在白名单里，否则会被忽略并退回 Site URL）：
+     ```
+     https://<你的用户名>.github.io/Anikey-Forum/**
+     http://localhost:5173/Anikey-Forum/**
+     ```
+   > ⚠️ 如果不做这一步，注册确认邮件里的链接会默认指向 `http://localhost:3000`，线上用户点了打不开。
+6.（可选）**Authentication → Providers → Email**：开发期可关闭「Confirm email」，注册后就能直接登录；保持开启则需要去邮箱点确认链接。
+7. 重启 `npm run dev`，即可注册、打分、评论。
 
 ---
 
