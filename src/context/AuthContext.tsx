@@ -19,8 +19,13 @@ interface AuthContextValue {
     username: string,
   ) => Promise<{ error: string | null; needConfirm: boolean }>
   signIn: (email: string, password: string) => Promise<{ error: string | null }>
+  signInWithProvider: (
+    provider: OAuthProvider,
+  ) => Promise<{ error: string | null }>
   signOut: () => Promise<void>
 }
+
+export type OAuthProvider = 'github' | 'google'
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined)
 
@@ -68,6 +73,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { error: error ? error.message : null }
   }
 
+  const signInWithProvider: AuthContextValue['signInWithProvider'] = async (
+    provider,
+  ) => {
+    if (!isSupabaseConfigured) return { error: '尚未配置 Supabase，无法登录' }
+    // 成功时浏览器会跳转去第三方授权，函数通常不会“正常返回”；
+    // 只有在发起阶段就出错（如 provider 未启用）才会拿到 error。
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: { redirectTo: getSiteUrl() },
+    })
+    return { error: error ? error.message : null }
+  }
+
   const signOut = async () => {
     if (!isSupabaseConfigured) return
     await supabase.auth.signOut()
@@ -82,6 +100,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         configured: isSupabaseConfigured,
         signUp,
         signIn,
+        signInWithProvider,
         signOut,
       }}
     >

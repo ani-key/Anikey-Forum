@@ -68,6 +68,37 @@ npm run dev
 
 ---
 
+## 🔑 第三方登录（可选：GitHub / Google）
+
+登录/注册页内置了「用 GitHub / Google 登录」按钮，免去邮箱确认流程。要让它真正可用，需要在 Supabase 控制台启用对应 provider：
+
+### GitHub（最简单，推荐先开这个）
+
+1. GitHub → **Settings → Developer settings → OAuth Apps → New OAuth App**。
+2. 填写：
+   - **Homepage URL**：`https://<你的用户名>.github.io/Anikey-Forum/`
+   - **Authorization callback URL**：填 Supabase 的回调地址
+     `https://<你的项目ref>.supabase.co/auth/v1/callback`
+   - （回调地址也能在 Supabase 控制台 Authentication → Providers → GitHub 里直接复制）
+3. 创建后拿到 **Client ID** 和 **Client Secret**。
+4. Supabase 控制台 **Authentication → Providers → GitHub**：打开开关，把上面两个值填进去，保存。
+
+### Google
+
+流程类似，但要在 [Google Cloud Console](https://console.cloud.google.com/) 建 OAuth 客户端（配置同意屏幕 + 凭据），同样把回调地址设为 `https://<你的项目ref>.supabase.co/auth/v1/callback`，再把 Client ID / Secret 填进 Supabase 的 Google provider。
+
+### 只想显示已启用的入口
+
+默认两个按钮都显示。如果你只开了 GitHub，把没启用的按钮隐藏掉，在 `.env`（线上则在 Actions secret）里设：
+
+```
+VITE_OAUTH_PROVIDERS=github
+```
+
+> 第三方登录回跳同样受 **Redirect URLs** 白名单约束，确保前面那步已把 `https://<你的用户名>.github.io/Anikey-Forum/**` 加进去了。
+
+---
+
 ## 🌏 配置 Bangumi 国内访问代理（可选）
 
 如果当前网络无法直连 `bgm.tv` / `api.bgm.tv`，首页、搜索、详情和封面会加载失败。此时需要部署一个代理服务，再把代理地址写入环境变量。

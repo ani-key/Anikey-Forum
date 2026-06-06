@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import AuthShell from '../components/AuthShell'
+import OAuthButtons from '../components/OAuthButtons'
 import { useAuth } from '../context/AuthContext'
 
 export default function RegisterPage() {
@@ -99,6 +100,7 @@ export default function RegisterPage() {
           {loading ? '注册中...' : '注册'}
         </button>
       </form>
+      <OAuthButtons configured={configured} />
     </AuthShell>
   )
 }

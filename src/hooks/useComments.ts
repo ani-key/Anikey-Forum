@@ -40,6 +40,24 @@ export function useComments(subjectId: number) {
   })
 }
 
+/** 我发表过的全部评论（个人中心），按时间倒序 */
+export function useMyComments() {
+  const { user } = useAuth()
+  return useQuery({
+    queryKey: ['comments', 'byUser', user?.id],
+    enabled: isSupabaseConfigured && !!user,
+    queryFn: async (): Promise<Comment[]> => {
+      const { data, error } = await supabase
+        .from('comments')
+        .select('*')
+        .eq('user_id', user!.id)
+        .order('created_at', { ascending: false })
+      if (error) throw error
+      return (data ?? []) as Comment[]
+    },
+  })
+}
+
 /** 发表评论或回复 */
 export function usePostComment(subjectId: number) {
   const { user } = useAuth()

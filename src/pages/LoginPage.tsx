@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import AuthShell from '../components/AuthShell'
+import OAuthButtons from '../components/OAuthButtons'
 import { useAuth } from '../context/AuthContext'
 
 export default function LoginPage() {
@@ -82,6 +83,7 @@ export default function LoginPage() {
           {loading ? '登录中...' : '登录'}
         </button>
       </form>
+      <OAuthButtons configured={configured} />
     </AuthShell>
   )
 }
